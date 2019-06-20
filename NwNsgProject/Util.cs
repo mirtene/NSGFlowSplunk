@@ -14,6 +14,13 @@ namespace nsgFunc
     public partial class Util
     {
         const int MAXTRANSMISSIONSIZE = 512 * 1024;
+        
+        static string splunkCertThumbprint { get; set; }
+
+        public Utils()
+        {
+            splunkCertThumbprint = getEnvironmentVariable("splunkCertThumbprint");
+        }
 
         public static string GetEnvironmentVariable(string name)
         {
@@ -151,7 +158,19 @@ namespace nsgFunc
             }
 
         }
+                public static bool ValidateMyCert(object sender, X509Certificate cert, X509Chain chain, SslPolicyErrors sslErr)
+        {
+            // if user has not configured a cert, anything goes
+            if (string.IsNullOrWhiteSpace(splunkCertThumbprint))
+                return true;
 
+            // if user has configured a cert, must match
+            var thumbprint = cert.GetCertHashString();
+            if (thumbprint == splunkCertThumbprint)
+                return true;
+
+            return false;
+        }
         static IEnumerable<List<DenormalizedRecord>> denormalizedRecords(string newClientContent, Binder errorRecordBinder, ILogger log)
         {
             var outgoingList = ListPool<DenormalizedRecord>.Allocate();

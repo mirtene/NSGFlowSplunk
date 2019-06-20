@@ -31,6 +31,7 @@ namespace nsgFunc
 
             string splunkAddress = Util.GetEnvironmentVariable("splunkAddress");
             string splunkToken = Util.GetEnvironmentVariable("splunkToken");
+            string splunkCertThumbprint = Util.GetEnvironmentVariable("splunkCertThumbprint");
 
             if (splunkAddress.Length == 0 || splunkToken.Length == 0)
             {
